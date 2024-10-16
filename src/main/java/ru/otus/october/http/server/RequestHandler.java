@@ -7,9 +7,9 @@ public class RequestHandler implements Runnable {
     private final Socket socket;
     private final Dispatcher dispatcher;
 
-    public RequestHandler(Socket socket) {
+    public RequestHandler(Socket socket, Dispatcher dispatcher) {
         this.socket = socket;
-        this.dispatcher = new Dispatcher();
+        this.dispatcher = dispatcher;
     }
 
     @Override
@@ -19,7 +19,7 @@ public class RequestHandler implements Runnable {
             int n = socket.getInputStream().read(buffer);
             String rawRequest = new String(buffer, 0, n);
             HttpRequest request = new HttpRequest(rawRequest);
-            request.info(false);
+            request.info();
             dispatcher.execute(request, socket.getOutputStream());
             socket.close();
         } catch (IOException e) {

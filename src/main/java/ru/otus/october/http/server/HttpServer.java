@@ -26,7 +26,7 @@ public class HttpServer {
             LOGGER.info("Сервер запущен на порту: " + port);
             while (true) {
                 Socket socket = serverSocket.accept();
-                executorService.execute(new RequestHandler(socket));
+                executorService.execute(new RequestHandler(socket, dispatcher));
             }
         } catch (IOException e) {
             e.printStackTrace();

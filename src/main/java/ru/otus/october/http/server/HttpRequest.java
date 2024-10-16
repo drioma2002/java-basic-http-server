@@ -56,10 +56,8 @@ public class HttpRequest {
         }
     }
 
-    public void info(boolean debug) {
-        if (debug) {
-            LOGGER.debug("Raw request: \r\n" + rawRequest);
-        }
+    public void info() {
+        LOGGER.debug("Raw request: \r\n" + rawRequest);
 
         LOGGER.info("Method: " + method);
         LOGGER.info("URI: " + uri);
