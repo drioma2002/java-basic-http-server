@@ -28,6 +28,12 @@ public class CalculatorProcessor implements RequestProcessor {
             throw new BadRequestException("Parameter 'b' has incorrect type");
         }
 
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         String math = a + " + " + b + " = " + (a + b);
         String response = "" +
                 "HTTP/1.1 200 OK\r\n" +
