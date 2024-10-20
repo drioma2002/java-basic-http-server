@@ -11,6 +11,8 @@ public class HttpRequest {
     private HttpMethod method;
     private String uri;
     private Map<String, String> parameters;
+    private Map<String, String> headers;
+    private String body;
     private Exception exception;
     private static final Logger LOGGER = LogManager.getLogger(HttpRequest.class.getName());
 
@@ -26,9 +28,18 @@ public class HttpRequest {
         return uri;
     }
 
+    public String getRoutingKey() {
+        return method + " " + uri;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
     public HttpRequest(String rawRequest) {
         this.rawRequest = rawRequest;
         this.parse();
+        this.parseHeaders();
     }
 
     public String getParameter(String key) {
@@ -54,10 +65,32 @@ public class HttpRequest {
                 parameters.put(keyValue[0], keyValue[1]);
             }
         }
+        if (method == HttpMethod.POST) {
+            this.body = rawRequest.substring(rawRequest.indexOf("\r\n\r\n") + 4);
+        }
+    }
+
+    private void parseHeaders() {
+        int startIndex = rawRequest.indexOf("\r\n", rawRequest.indexOf(' ') + 1);
+        int endIndex = rawRequest.indexOf("\r\n\r\n") - 4;
+
+        String rawHeaders = rawRequest.substring(startIndex, endIndex);
+
+        headers = new HashMap<>();
+
+        String[] rawHeadersSplitted = rawHeaders.split("\r\n");
+
+        for (String o : rawHeadersSplitted) {
+            if (!o.contains(": ")) {
+                continue;
+            }
+            String[] keyValue = o.split(": ", 2);
+            headers.put(keyValue[0], keyValue[1]);
+        }
     }
 
     public void info() {
-        LOGGER.debug("Raw request: \r\n" + rawRequest);
+        headers.forEach((key, value) -> LOGGER.debug("Request Headers: KEY=" + key + " VALUE=" + value));
 
         LOGGER.info("Method: " + method);
         LOGGER.info("URI: " + uri);
